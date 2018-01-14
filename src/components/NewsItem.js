@@ -3,7 +3,10 @@ import {
     View,
     TouchableOpacity,
     StyleSheet,
-    ActionSheetIOS
+    ActionSheetIOS,
+    ToastAndroid,
+    Platform,
+    Vibration
 } from 'react-native';
 import Byline from './Byline';
 import AppText from './AppText';
@@ -17,11 +20,28 @@ export default class NewsItem extends Component {
     }
 
     onLongPress() {
-        ActionSheetIOS.showActionSheetWithOptions({
-            options: ['Bookmark', 'Cancel'],
-            cancelButtonIndex: 1,
-            title: this.props.title
-        }, buttonIndex => console.log('Button selected', buttonIndex));
+        const platformMsgFn = Platform.select({
+            android: () => {
+                ToastAndroid.show(
+                    `"${this.props.title}" has been bookmarked!`,
+                    ToastAndroid.LONG
+                );
+                Vibration.vibrate();
+                this.props.onBookmark();
+            },
+            ios: () => {
+                ActionSheetIOS.showActionSheetWithOptions({
+                    options: ['Bookmark', 'Cancel'],
+                    cancelButtonIndex: 1,
+                    title: this.props.title
+                }, (buttonIndex) => {
+                    if (buttonIndex === 0) {
+                        this.props.onBookmark();
+                    }
+                })
+            }
+        });
+        platformMsgFn();
     }
 
     render() {

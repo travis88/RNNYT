@@ -22,6 +22,7 @@ export default class NewsFeed extends Component {
         this.renderRow = this.renderRow.bind(this);
         this.onModalClose = this.onModalClose.bind(this);
         this.onModalOpen = this.onModalOpen.bind(this);
+        this.refresh = this.refresh.bind(this);
     }
 
     renderModal() {
@@ -72,6 +73,22 @@ export default class NewsFeed extends Component {
         );
     }
 
+    componentWillMount() {
+        this.refresh();
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            dataSource: this.state.dataSource.cloneWithRows(nextProps.news)
+        });
+    }
+
+    refresh() {
+        if (this.props.loadNews) {
+            this.props.loadNews();
+        }
+    }
+
     render() {
         return (
             <View style={globalStyles.COMMON_STYLES.pageContainer}>
@@ -89,31 +106,32 @@ export default class NewsFeed extends Component {
 
 NewsFeed.propTypes = {
     news: PropTypes.arrayOf(PropTypes.object),
-    listStyles: View.propTypes.style
+    listStyles: View.propTypes.style,
+    loadNews: PropTypes.func
 };
 
-NewsFeed.defaultProps = {
-    news: [
-        {
-            title: 'React Native',
-            imageUrl: 'https://facebook.github.io/react/img/logo_og.png',
-            description: 'Build Native Mobile Apps using Javascript and React',
-            date: new Date(),
-            author: 'Facebook',
-            location: 'Menlo Park, California',
-            url: 'https://facebook.github.io/react-native'
-        },
-        {
-            title: 'Packt Publishing',
-            imageUrl: 'https://www.packtpub.com/sites/default/files/packt_logo.png',
-            description: 'Stay Relevant',
-            date: new Date(),
-            author: 'Packt Publishing',
-            location: 'Birmingham, UK',
-            url: 'https://www.packtpub.com'
-        }
-    ]
-};
+// NewsFeed.defaultProps = {
+//     news: [
+//         {
+//             title: 'React Native',
+//             imageUrl: 'https://facebook.github.io/react/img/logo_og.png',
+//             description: 'Build Native Mobile Apps using Javascript and React',
+//             date: new Date(),
+//             author: 'Facebook',
+//             location: 'Menlo Park, California',
+//             url: 'https://facebook.github.io/react-native'
+//         },
+//         {
+//             title: 'Packt Publishing',
+//             imageUrl: 'https://www.packtpub.com/sites/default/files/packt_logo.png',
+//             description: 'Stay Relevant',
+//             date: new Date(),
+//             author: 'Packt Publishing',
+//             location: 'Birmingham, UK',
+//             url: 'https://www.packtpub.com'
+//         }
+//     ]
+// };
 
 const styles = StyleSheet.create({
     newsItem: {
